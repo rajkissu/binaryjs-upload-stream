@@ -10,11 +10,26 @@
     <body>
         <h1>BinaryJS File Upload and Streaming</h1>
 
-        <div id="progress">Drag n Drop a file into the box below</div>
-        <div id="upload-box"></div>
-        <div id="list"></div>
+        <section id="main">
+            <fieldset>
+                <legend>Drag n Drop</legend>
+                <aside id="upload-box">
+                    <article id="progress">Drop file here</article>
+                </aside>
+            </fieldset>
 
-        <video id="video"></video>
+            <fieldset>
+                <legend>Select a Link</legend>
+
+                <nav id="list"></nav>
+            </fieldset>
+
+            <fieldset>
+                <legend>Play the Video</legend>
+
+                <video id="video"></video>
+            </fieldset>
+        </section>
 
         <script src="/js/lib/binary.js"></script>
         <script src="/js/lib/jquery.js"></script>

@@ -30,12 +30,8 @@ var video = (function () {
         stream.on('error', cb);
     }
 
-    function request(e) {
-        fizzle(e);
-
-        var stream = emit('request', {
-            name : $(this).text()
-        });
+    function request(name) {
+        emit('request', { name : name });
     }
 
     function download(stream, meta, cb) {

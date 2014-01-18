@@ -1,6 +1,6 @@
 {
-  "name": "av",
-  "version": "0.0.1",
+  "name": "binaryjs-upload-stream",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "node app.js"

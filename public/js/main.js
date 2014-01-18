@@ -6,42 +6,18 @@ $(document).ready(function () {
     $progress = $('#progress');
     $list     = $('#list');
 
+    $video.attr({
+        controls : true,
+        autoplay : true,
+        type     : 'video/mp4'
+    });
+
     client.on('open', function () {
         video.list(setupList);
 
-        $video.attr({
-            controls: true,
-            type    : 'video/mp4'
-        });
-
         $box.on('dragenter', fizzle);
         $box.on('dragover', fizzle);
-        $box.on('drop', function (e) {
-            fizzle(e);
-
-            var file, tx;
-
-            file = e.originalEvent.dataTransfer.files[0];
-            tx   = 0;
-
-            video.upload(file, function (err, data) {
-                var msg;
-
-                if (data.end) {
-                    msg = "Upload complete: " + file.name;
-
-                    video.list(setupList);
-                } else if (data.rx) {
-                    msg = Math.round(tx += data.rx * 100) + '% complete';
-
-                } else {
-                    // assume error
-                    msg = data.err;
-                }
-
-                $progress.text(msg);
-            });
-        });
+        $box.on('drop', setupDragDrop);
     });
 
     client.on('stream', function (stream, meta) {
@@ -60,7 +36,47 @@ $(document).ready(function () {
             $li = $('<li>').appendTo($ul);
             $a  = $('<a>').appendTo($li);
 
-            $a.attr('href', '#').text(file).click(video.request);
+            $a.attr('href', '#').text(file).click(function (e) {
+                fizzle(e);
+
+                var name = $(this).text();
+                video.request(name);
+            });
+        });
+    }
+
+    function setupDragDrop(e) {
+        fizzle(e);
+
+        var file, tx;
+
+        file = e.originalEvent.dataTransfer.files[0];
+        tx   = 0;
+
+        video.upload(file, function (err, data) {
+            var msg;
+
+            if (data.end) {
+                msg = "Upload complete: " + file.name;
+
+                video.list(setupList);
+            } else if (data.rx) {
+                msg = Math.round(tx += data.rx * 100) + '% complete';
+
+            } else {
+                // assume error
+                msg = data.err;
+            }
+
+            $progress.text(msg);
+            
+            if (data.end) {
+                setTimeout(function () {
+                    $progress.fadeOut(function () {
+                        $progress.text('Drop file here');
+                    }).fadeIn();
+                }, 5000);
+            }
         });
     }
 });
