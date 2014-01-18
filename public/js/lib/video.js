@@ -1,22 +1,19 @@
-var $video, $box, $progress, $list;
+var hostname, client;
 
-$video    = $('#video');
-$box      = $('#upload-box');
-$progress = $('#progress');
-$list     = $('#list');
+hostname = window.location.hostname;
 
-function upload(e, client) {
-    var event, file, stream, tx;
+client = new BinaryClient('ws://' + hostname + ':9000');
 
-    event = e.originalEvent;
+function upload(e, cb) {
+    var file, stream, tx;
 
-    event.preventDefault();
-    file = event.dataTransfer.files[0];
+    fizzle(e);
 
-    stream = client.send(file, {
-        name: file.name,
-        size: file.size,
-        type: file.type
+    file   = e.dataTransfer.files[0];
+    stream = emit(file, {
+        name : file.name,
+        size : file.size,
+        type : file.type
     });
 
     tx = 0;
@@ -28,6 +25,8 @@ function upload(e, client) {
             msg = "Upload complete: " + file.name;
         } else if (data.rx) {
             msg = Math.round(tx += data.rx * 100) + '% complete';
+
+            emit({ op: 'list' });
         } else {
             // assume error
             msg = data.err;
@@ -37,28 +36,33 @@ function upload(e, client) {
     });
 }
 
-function play(e, client) {
-    var stream = client.send({}, {
-        op   : 'play',
+function request(e) {
+    fizzle(e);
+
+    var stream = emit({
+        op   : 'request',
         name : $(this).text()
     });
 }
 
-function streamVideo(stream, meta) {
+function download(stream, meta, cb) {
     var parts = [];
 
     stream.on('data', function (data) {
         parts.push(data);
     });
 
+    stream.on('error', function (err) {
+        cb(err);
+    });
+
     stream.on('end', function () {
         var src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts));
 
-        $video.attr('src', src);
+        cb(null, src);
     });
 }
 
-function fizzle(e) {
-    e.preventDefault();
-    e.stopPropagation();
+function emit(msg) {
+    return client.send({}, msg);
 }

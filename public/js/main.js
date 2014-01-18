@@ -1,11 +1,13 @@
 $(document).ready(function () {
-    var hostname, client;
+    var $video, $box, $progress, $list;
 
-    hostname = window.location.hostname;
-    client = new BinaryClient('ws://' + hostname + ':9000');
+    $video    = $('#video');
+    $box      = $('#upload-box');
+    $progress = $('#progress');
+    $list     = $('#list');
 
     client.on('open', function () {
-        var stream = client.send({}, {
+        var stream = emit({
             op: 'list'
         });
 
@@ -20,9 +22,7 @@ $(document).ready(function () {
                 $li = $('<li>').appendTo($ul);
                 $a  = $('<a>').appendTo($li);
                 
-                $a.text(file).click(function (e) {
-                    play.call(this, e, client);
-                });
+                $a.attr('href', '#').text(file).click(request);
             });
         });
 
@@ -33,10 +33,12 @@ $(document).ready(function () {
 
         $box.on('dragenter', fizzle);
         $box.on('dragover', fizzle);
-        $box.on('drop', function (e) {
-            upload.call(this, e, client);
-        });
+        $box.on('drop', upload);
     });
 
-    client.on('stream', streamVideo);
+    client.on('stream', function (stream, meta) {
+        download(stream, meta, function (err, src) {
+            $video.attr('src', src);
+        });
+    });
 });
