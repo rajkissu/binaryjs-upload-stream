@@ -36,7 +36,7 @@ bs = new BinaryServer({ port: 9000 });
 
 bs.on('connection', function (client) {
     client.on('stream', function (stream, meta) {
-        switch(meta.op) {
+        switch(meta.event) {
             // list available videos
             case 'list':
                 video.list(stream, meta);
@@ -47,8 +47,9 @@ bs.on('connection', function (client) {
                 video.request(client, meta);
                 break;
 
+            // attempt an upload
+            case 'upload':
             default:
-                // attempt an upload
                 video.upload(stream, meta);
         }
     });

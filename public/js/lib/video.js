@@ -1,68 +1,58 @@
-var hostname, client;
+var video = (function () {
+    return {
+        list     : list,
+        upload   : upload,
+        request  : request,
+        download : download
+    };
 
-hostname = window.location.hostname;
+    function list(cb) {
+        var stream = emit('list');
 
-client = new BinaryClient('ws://' + hostname + ':9000');
+        stream.on('data', function (data) {
+            cb(null, data.files);
+        });
 
-function upload(e, cb) {
-    var file, stream, tx;
+        stream.on('error', cb);
+    }
 
-    fizzle(e);
+    function upload(file, cb) {
+        var stream = emit('upload', {
+            name  : file.name,
+            size  : file.size,
+            type  : file.type
+        }, file);
 
-    file   = e.dataTransfer.files[0];
-    stream = emit(file, {
-        name : file.name,
-        size : file.size,
-        type : file.type
-    });
+        stream.on('data', function (data) {
+            cb(null, data);
+        });
 
-    tx = 0;
+        stream.on('error', cb);
+    }
 
-    stream.on('data', function (data) {
-        var msg;
+    function request(e) {
+        fizzle(e);
 
-        if (data.end) {
-            msg = "Upload complete: " + file.name;
-        } else if (data.rx) {
-            msg = Math.round(tx += data.rx * 100) + '% complete';
+        var stream = emit('request', {
+            name : $(this).text()
+        });
+    }
 
-            emit({ op: 'list' });
-        } else {
-            // assume error
-            msg = data.err;
-        }
+    function download(stream, meta, cb) {
+        var parts = [];
 
-        $progress.text(msg);
-    });
-}
+        stream.on('data', function (data) {
+            parts.push(data);
+        });
 
-function request(e) {
-    fizzle(e);
+        stream.on('error', function (err) {
+            cb(err);
+        });
 
-    var stream = emit({
-        op   : 'request',
-        name : $(this).text()
-    });
-}
+        stream.on('end', function () {
+            var src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts));
 
-function download(stream, meta, cb) {
-    var parts = [];
-
-    stream.on('data', function (data) {
-        parts.push(data);
-    });
-
-    stream.on('error', function (err) {
-        cb(err);
-    });
-
-    stream.on('end', function () {
-        var src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts));
-
-        cb(null, src);
-    });
-}
-
-function emit(msg) {
-    return client.send({}, msg);
-}
+            cb(null, src);
+        });
+    }
+})();
