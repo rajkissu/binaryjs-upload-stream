@@ -1,0 +1,26 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+#upload-box {
+    background: #eee;
+    font-size: 26px;
+    width: 400px;
+    height: 300px;
+    line-height: 300px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#video {
+    margin-left: auto;
+    margin-right: auto;
+
+    width: 320px;
+    height: 240px;
+}
