@@ -575,6 +575,15 @@ For the full source - which includes the stuff I missed during the tutorial (css
 grab the tarball over [here](http://github.com/rajkissu/binaryjs-upload-stream). Alternatively, visit the
 Github page over [here](https://github.com/rajkissu/binaryjs-upload-stream).
 
+## Video Samples
+
+I've taken the liberty of adding sample video files to the `samples/` directory,
+in case you need some files to play with.
+
+You can check the page I got them from too:
+
+[Sample WebM, Ogg, and MP4 Video Files for HTML5](http://techslides.com/sample-webm-ogg-and-mp4-video-files-for-html5/)
+
 ## Going Further
 
 There's more you can do to spruce up this example that is well beyond the
