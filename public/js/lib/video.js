@@ -34,7 +34,7 @@ var video = (function () {
         emit('request', { name : name });
     }
 
-    function download(stream, meta, cb) {
+    function download(stream, cb) {
         var parts = [];
 
         stream.on('data', function (data) {

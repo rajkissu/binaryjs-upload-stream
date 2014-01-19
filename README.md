@@ -207,10 +207,14 @@ file will house the implementations for the following capabilities:
 * uploading of a video to the server
 
 ```
-var uploadPath, fs;
+var fs, uploadPath, supportedTypes;
 
-uploadPath = __dirname + '/../videos';
-fs         = require('fs');
+fs             = require('fs');
+uploadPath     = __dirname + '/../videos';
+supportedTypes = [
+    'video/mp4',
+    'video/avi'
+];
 
 module.exports = {
     list    : list,
@@ -241,8 +245,7 @@ function request(client, meta) {
 }
 ```
 
-The file upload implementation in `upload` checks if the file is of type
-`video/mp4`, which is the only supported type in this example.
+The file upload implementation in `upload` checks if the file is of a supported video type.
 
 If the type matches, the function proceeds - otherwise, it returns an error.
 
@@ -251,7 +254,7 @@ status as it writes the video to disk, chunk by chunk.
 
 ```
 function upload(stream, meta) {
-    if (meta.type !== 'video/mp4') {
+    if (!~supportedTypes.indexOf(meta.type)) {
         stream.write({ err: 'Unsupported type: ' + meta.type });
         stream.end();
         return;
@@ -412,7 +415,7 @@ The `src` object, containing the newly formed `Blob`, can then be returned
 in a callback.
 
 ```
-function download(stream, meta, cb) {
+function download(stream, cb) {
     var parts = [];
 
     stream.on('data', function (data) {
@@ -450,8 +453,8 @@ without initiation from the client-side (list, video request, etc) is
 undoubtedly a video file.
 
 ```
-client.on('stream', function (stream, meta) {
-    video.download(stream, meta, function (err, src) {
+client.on('stream', function (stream) {
+    video.download(stream, function (err, src) {
         $video.attr('src', src);
     });
 });
@@ -544,7 +547,12 @@ Click a video link and watch it stream
 And there you have it - your very own, video server with support for uploading
 and streaming. Written in Node!
 
-## Limitations
+## Caveats
+
+I've tested uploading of video files both small and large - and they work fine.
+
+Streaming of large video files, however, takes a while and tends to freeze the
+page. Proceed with caution - you have been warned!
 
 BinaryJS's client-side component works with the following browsers:
 

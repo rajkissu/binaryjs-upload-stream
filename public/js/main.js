@@ -8,8 +8,7 @@ $(document).ready(function () {
 
     $video.attr({
         controls : true,
-        autoplay : true,
-        type     : 'video/mp4'
+        autoplay : true
     });
 
     client.on('open', function () {
@@ -20,8 +19,8 @@ $(document).ready(function () {
         $box.on('drop', setupDragDrop);
     });
 
-    client.on('stream', function (stream, meta) {
-        video.download(stream, meta, function (err, src) {
+    client.on('stream', function (stream) {
+        video.download(stream, function (err, src) {
             $video.attr('src', src);
         });
     });
@@ -70,7 +69,7 @@ $(document).ready(function () {
 
             $progress.text(msg);
             
-            if (data.end) {
+            if (data.end || data.err) {
                 setTimeout(function () {
                     $progress.fadeOut(function () {
                         $progress.text('Drop file here');
