@@ -213,7 +213,8 @@ fs             = require('fs');
 uploadPath     = __dirname + '/../videos';
 supportedTypes = [
     'video/mp4',
-    'video/avi'
+    'video/webm',
+    'video/ogg'
 ];
 
 module.exports = {
@@ -551,7 +552,10 @@ and streaming. Written in Node!
 
 I've tested uploading of video files both small and large - and they work fine.
 
-Streaming of large video files, however, takes a while and tends to freeze the
+Of course, since the example uses the html5 `<video>` tag, supported formats are
+limited to `video/mp4`, `video/webm` and `video/ogg`.
+
+Streaming of large video files, however, takes a while and may freeze the
 page. Proceed with caution - you have been warned!
 
 BinaryJS's client-side component works with the following browsers:
